@@ -3,6 +3,8 @@ import requests
 import pathlib
 import threading
 import praw
+import argparse
+import zipfile
 
 def save_image( filename, content):
 	with open(str(filename),'wb') as file:
@@ -10,15 +12,28 @@ def save_image( filename, content):
 		file.close
 
 def file_check(filename,content):
-	path = pathlib.Path(filename)
-	if path.is_file():
-		print('AlreadyDownloaded')
-	else:
-		save_image(filename,content)
+	try:
+		path = pathlib.Path(filename)
+		if path.is_file():
+			print('AlreadyDownloaded')
+		else:
+			save_image(filename,content)
+	except OSError as err:
+		print("OS error: {0}".format(err))
+
+
+parser = argparse.ArgumentParser(description='Options')
+parser.add_argument('-r', help='subreddit name')
+parser.add_argument('-n', type=int, default=3,
+                   help='Number of posts (default: 3)')
+parser.add_argument('-a',help='Album link',required=True)
+
+args = parser.parse_args()
+#print(args.accumulate(args.integers))
 
 symbols=['\\','/','<','>',':','?','|','"','*']
 r = praw.Reddit(user_agent='redditdlv0.1 by /u/sujithrengan')
-subreddit = r.get_subreddit('prettygirls').get_controversial(limit=10)
+subreddit = r.get_subreddit(args.r).get_hot(limit=args.n)
 #print(dir(subreddit))
 for post in subreddit:
 	print(post.url)

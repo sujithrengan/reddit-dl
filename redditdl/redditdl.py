@@ -24,25 +24,25 @@ def file_check(filename,content):
 
 parser = argparse.ArgumentParser(description='Options')
 parser.add_argument('-r', help='subreddit name')
-parser.add_argument('-n', type=int, default=3,
-                   help='Number of posts (default: 3)')
-parser.add_argument('-a',help='Album link',required=True)
+parser.add_argument('-n', type=int, default=10,
+                   help='Number of posts (default: 10)')
+parser.add_argument('-a',help='Album link')
 
 args = parser.parse_args()
 #print(args.accumulate(args.integers))
 
 symbols=['\\','/','<','>',':','?','|','"','*']
-r = praw.Reddit(user_agent='redditdlv0.1 by /u/sujithrengan')
-subreddit = r.get_subreddit(args.r).get_hot(limit=args.n)
-#print(dir(subreddit))
-for post in subreddit:
-	print(post.url)
-	if post.url[:19]=="http://i.imgur.com/":
-		filename=post.title+'_'+post.url[19:]
-		request = requests.get (post.url)
-		file_check(filename,request.content)
-	else:	
-		if "imgur" in post.url:
+if args.r!=None:
+	r = praw.Reddit(user_agent='redditdlv0.1 by /u/sujithrengan')
+	subreddit = r.get_subreddit(args.r).get_hot(limit=args.n)
+	#print(dir(subreddit))
+	for post in subreddit:
+		print(post.url)
+		if post.url[:19]=="http://i.imgur.com/":
+			filename=post.title+'_'+post.url[19:]
+			request = requests.get (post.url)
+			file_check(filename,request.content)
+		elif "imgur" in post.url:
 			filename=post.title+'_'+post.url[17:]+'.jpg'
 			request = requests.get ('http://i.imgur.com/'+post.url[17:]+'.jpg')
 			file_check(filename,request.content)
@@ -59,7 +59,10 @@ for post in subreddit:
 					ptype=link.get('content').rsplit('?',1)
 					ptype=ptype[0].rsplit('.',1)
 					filename=post.title+'_'+'external'+'.'+ptype[1] #TODO: include image tag and filename symbol consistency 
-					
+						
 					request = requests.get (link.get('content'))
 					file_check(filename,request.content)
-					
+elif args.a!=None:
+	print(args.a)
+else:
+	print('FuckOff')

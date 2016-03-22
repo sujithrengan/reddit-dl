@@ -7,13 +7,13 @@ import argparse
 import zipfile
 
 def save_image( filename, content):
-	with open(str(filename),'wb') as file:
+	with open(str('../bin/'+filename),'wb') as file:
 		file.write(content)
 		file.close
 
 def file_check(filename,content):
 	try:
-		path = pathlib.Path(filename)
+		path = pathlib.Path('../bin/'+filename)
 		if path.is_file():
 			print('AlreadyDownloaded')
 		else:
@@ -38,6 +38,17 @@ if args.r!=None:
 	#print(dir(subreddit))
 	for post in subreddit:
 		print(post.url)
+		
+		tag=post.url.split('/')
+		filename=post.title+'_'+tag[-1]+'.jpg'
+		if post.url.endswith(('.jpg','.png','.jpeg','.gif')):
+			request = requests.get (post.url)
+
+		else:	
+			request = requests.get (post.url+'.jpg')
+		file_check(filename,request.content)
+
+		"""
 		if post.url[:19]=="http://i.imgur.com/":
 			filename=post.title+'_'+post.url[19:]
 			request = requests.get (post.url)
@@ -46,9 +57,11 @@ if args.r!=None:
 			filename=post.title+'_'+post.url[17:]+'.jpg'
 			request = requests.get ('http://i.imgur.com/'+post.url[17:]+'.jpg')
 			file_check(filename,request.content)
-
+		"""
+		if True:
+			pass
 		else:
-			with open('manual_download.txt','a') as file:
+			with open('../bin/manual_download.txt','a') as file:
 				file.write('\n'+post.url)
 				file.close
 

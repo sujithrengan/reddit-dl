@@ -13,7 +13,10 @@ def save_image( filename, content):
 
 def file_check(filename,content):
 	try:
+		for str in symbols:
+			filename.replace(str,'_')
 		path = pathlib.Path('../bin/'+filename)
+		print(''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip())
 		if path.is_file():
 			print('AlreadyDownloaded')
 		else:
@@ -40,13 +43,26 @@ if args.r!=None:
 		print(post.url)
 		
 		tag=post.url.split('/')
-		filename=post.title+'_'+tag[-1]+'.jpg'
-		if post.url.endswith(('.jpg','.png','.jpeg','.gif')):
-			request = requests.get (post.url)
+		filetypes=['.jpg','.png','.jpeg','.gif']
+		downloaded=False
+		for ftype in filetypes:
+			if post.url.endswith(ftype):
+				request = requests.get (post.url)
+				filename=post.title+'_'+tag[-1]+ftype
+				file_check(filename,request.content)
+				downloaded=True
+				print('filetype-found')
+				break
+		
+		ftype='.jpg'
+		#if post.url.endswith(('.jpg','.png','.jpeg','.gif')):
+		#	request = requests.get (post.url)
 
-		else:	
-			request = requests.get (post.url+'.jpg')
-		file_check(filename,request.content)
+		#else:	
+		if not(downloaded):
+			print('explicit.jpg')
+			request = requests.get (post.url+ftype)
+			file_check(post.title+'_'+tag[-1]+ftype,request.content)
 
 		"""
 		if post.url[:19]=="http://i.imgur.com/":

@@ -5,6 +5,7 @@ import threading
 import praw
 import argparse
 import zipfile
+import re
 
 def save_image( filename, content):
 	with open(str('../bin/'+filename),'wb') as file:
@@ -13,13 +14,13 @@ def save_image( filename, content):
 
 def file_check(filename,content):
 	try:
-		for str in symbols:
-			filename.replace(str,'_')
+		filename=re.sub('[/\\?:><"|*]','_',filename)
 		path = pathlib.Path('../bin/'+filename)
-		print(''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip())
+		#print(''.join( [ "%02X " % ord( x ) for x in content ] ).strip())
 		if path.is_file():
 			print('AlreadyDownloaded')
 		else:
+			print('name= '+filename)
 			save_image(filename,content)
 	except OSError as err:
 		print("OS error: {0}".format(err))
@@ -29,7 +30,7 @@ parser = argparse.ArgumentParser(description='Options')
 parser.add_argument('-r', help='subreddit name')
 parser.add_argument('-n', type=int, default=10,
                    help='Number of posts (default: 10)')
-parser.add_argument('-a',help='Album link')
+#parser.add_argument('-a',help='Album link')
 
 args = parser.parse_args()
 #print(args.accumulate(args.integers))

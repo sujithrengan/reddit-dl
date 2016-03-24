@@ -42,7 +42,6 @@ if args.r!=None:
 	#print(dir(subreddit))
 	for post in subreddit:
 		print(post.url)
-		
 		tag=post.url.split('/')
 		filetypes=['.jpg','.png','.jpeg','.gif']
 		downloaded=False

@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(description='Options')
 parser.add_argument('-r', help='subreddit name')
 parser.add_argument('-n', type=int, default=10,
                    help='Number of posts (default: 10)')
-#parser.add_argument('-a',help='Album link')
+parser.add_argument('-m',type=int, default=0,help='Mode: 0=Hot|1=New|2=Rising')
 
 args = parser.parse_args()
 #print(args.accumulate(args.integers))
@@ -38,7 +38,10 @@ args = parser.parse_args()
 symbols=['\\','/','<','>',':','?','|','"','*']
 if args.r!=None:
 	r = praw.Reddit(user_agent='redditdlv0.1 by /u/sujithrengan')
-	subreddit = r.get_subreddit(args.r).get_hot(limit=args.n)
+	if args.m==0:
+		subreddit = r.get_subreddit(args.r).get_hot(limit=args.n)
+	elif args.m==1:
+		subreddit = r.get_subreddit(args.r).get_new(limit=args.n)
 	#print(dir(subreddit))
 	for post in subreddit:
 		print(post.url)
